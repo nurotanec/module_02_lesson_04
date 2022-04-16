@@ -127,6 +127,16 @@
     };
   };
 
+  const createFooter = title => {
+    const footer = document.createElement('footer');
+    footer.classList.add('footer');
+    footer.insertAdjacentHTML('beforeend', `
+        Все права защищены ©${title}
+    `);
+
+    return footer;
+  };
+
   const renderPhoneBook = (app, title) => {
     const header = createHeader();
     const logo = createLogo(title);
@@ -145,11 +155,12 @@
     ]);
     const table = createTable();
     const form = createForm();
+    const footer = createFooter(title);
 
     header.headerContainer.append(logo);
     main.mainContainer.append(buttonGroup.btnWrapper, table, form.overlay);
 
-    app.append(header, main);
+    app.append(header, main, footer);
 
     return {
       list: table.tbody,
