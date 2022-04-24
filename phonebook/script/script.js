@@ -2,7 +2,7 @@
 
 {
   const addContactData = contact => {
-    data.push(contact);
+    setStorage('contacts', contact);
   };
 
   const createContainer = () => {
@@ -232,7 +232,6 @@
   };
 
   const modalControl = (btnAdd, formOverlay) => {
-
     const openModal = () => {
       formOverlay.classList.add('is-visible');
     };
@@ -265,6 +264,7 @@
     list.addEventListener('click', e => {
       const target = e.target;
       if (target.closest('.del-icon')) {
+        removeStorage(target.closest('.contact').children[3].innerText);
         target.closest('.contact').remove();
       }
     });
@@ -288,6 +288,23 @@
     });
   };
 
+  const getStorage = key => {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  };
+
+  const setStorage = (key, object) => {
+    const objects = getStorage(key);
+    localStorage.setItem(key, JSON.stringify(objects.concat(object)));
+  };
+
+  const removeStorage = phone => {
+    const contacts = getStorage('contacts');
+    const newContacts = contacts.filter( (contact, index, arr) => {
+      return contact.phone !== phone;
+    });
+    localStorage.setItem('contacts', JSON.stringify(newContacts));
+  };
+
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
 
@@ -300,8 +317,13 @@
       form,
     } = renderPhoneBook(app, title);
 
+    // initial storage
+    if (getStorage('contacts').length === 0) {
+      setStorage('contacts', data);
+    }
+
     // Функционал
-    const allRow = renderContacts(list, data);
+    const allRow = renderContacts(list, getStorage('contacts'));
     const {closeModal} = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
